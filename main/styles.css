@@ -1,0 +1,111 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400&display=swap");
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+li,
+p {
+  font-family: "Poppins", he;
+}
+h1 {
+  font-size: 1.5rem;
+}
+::placeholder {
+  text-align: center;
+  font-size: 0.8em;
+}
+.container {
+  height: 100vh;
+  background-image: linear-gradient(90deg, #a2d2ff, #cdb4db);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+#to-do {
+  width: 350px;
+  height: 400px;
+  background-color: #fff;
+  box-shadow: 2px 2px 5px #666;
+  border-radius: 5px;
+  padding: 5px 10px;
+  position: relative;
+  overflow-y: scroll;
+}
+.input {
+  display: flex;
+  align-items: center;
+}
+.to-do-input {
+  width: 85%;
+  height: 40px;
+  text-align: center;
+  font-size: 1.2em;
+}
+#add-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 40px;
+  width: 40px;
+  color: #fff;
+  background-color: #4361ee;
+  font-size: 1.2em;
+  margin-left: 5px;
+  font-size: 2em;
+  font-weight: 600;
+  cursor: pointer;
+}
+#to-do-lists {
+  margin-top: 25px;
+}
+.to-do-list {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  list-style-type: none;
+  margin: 10px 0;
+  background-color: #eee;
+}
+.to-do-list p {
+  width: 100%;
+  padding: 10px;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.1s;
+  display: flex;
+}
+.deleteButton {
+  padding: 14px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #e9153a;
+  cursor: pointer;
+}
+.deleteButton:hover {
+  background-color: #c91331;
+}
+.to-do-list p:hover {
+  background-color: #ccc;
+}
+.checked {
+  text-decoration: line-through;
+  display: flex;
+  transition: all 0.1s;
+}
+.checked::after {
+  content: url("img/check.svg");
+  display: flex;
+  opacity: 1;
+}
+.swal2-html-container {
+  font-family: "Poppins", Helvetica, sans-serif;
+  font-size: 1.5em;
+}
