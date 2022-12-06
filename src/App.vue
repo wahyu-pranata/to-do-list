@@ -1,7 +1,7 @@
 <script setup>
-import { ref, Transition } from 'vue';
+import { ref } from 'vue';
 import Navbar from './components/Navbar.vue';
-import AddToDo from './components/AddToDo.vue';
+import ToDoModal from './components/ToDoModal.vue';
 
 let show = ref(false);
 </script>
@@ -12,7 +12,7 @@ let show = ref(false);
     <h1>You don't have any to-do list<br>&gt;﹏&lt;</h1>
     <button @click="show = !show" class="submit">Add new to-do</button>
       <div v-if="show">
-        <AddToDo @close="show = false" class="form"/>
+        <ToDoModal @close="show = false" class="form"/>
       </div>
   </main>
 </template>
