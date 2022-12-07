@@ -4,6 +4,9 @@ let form = ref({
     title: "",
     description: ""
 })
+defineProps({
+    errorMsg: String
+})
 </script>
 
 <template>
@@ -11,10 +14,11 @@ let form = ref({
         <form>
             <header>
                 <h2>Add new to-do</h2>
+                <small v-if="errorMsg">{{ errorMsg }}</small>
             </header>
             <div>
                 <label for="title">Title <span>*</span></label>
-                <input type="text" id="title" v-model="form.title">
+                <input type="text" id="title" v-model="form.title" @keypress="$emit('clearErr')">
             </div>
             <div>
                 <label for="description">Description</label>
@@ -45,6 +49,9 @@ header {
 }
 header h2 {
     color: #1e293b;
+}
+header small {
+    color: #f00;
 }
 form div {
     margin-bottom: 16px;

@@ -2,14 +2,21 @@
 import { ref, computed, Transition } from 'vue';
 import Navbar from './components/Navbar.vue';
 import ToDoModal from './components/ToDoModal.vue';
+import { useValidation } from './composables/useValidation.js'
 
 let show = ref(false);
+let toDos = ref([]);
+let error = ref()
 let modalShowed = computed(() => {
 	return show.value ? 'max-height: 100vh; overflow: hidden;' : ''
-})
+});
 
 function create(form) {
-	//
+	if(useValidation(form)) {
+		error.value = useValidation(form);
+	} else {
+		
+	}
 }
 </script>
 
@@ -20,7 +27,7 @@ function create(form) {
 		<button @click="show = !show" class="submit">Add new to-do</button>
 		<Transition name="fade-down">
 			<div v-if="show">
-				<ToDoModal class="form" @close="show = false" @create="create" />
+				<ToDoModal class="form" @close="show = false" @create="create" :error-msg="error" @clear-err="error = ''"/>
 			</div>
 		</Transition>
 	</main>
