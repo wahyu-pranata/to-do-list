@@ -1,4 +1,9 @@
 <script setup>
+import { ref } from 'vue';
+let form = ref({
+    title: "",
+    description: ""
+})
 </script>
 
 <template>
@@ -9,15 +14,15 @@
             </header>
             <div>
                 <label for="title">Title <span>*</span></label>
-                <input type="text" id="title">
+                <input type="text" id="title" v-model="form.title">
             </div>
             <div>
                 <label for="description">Description</label>
-                <textarea id="description" rows="4"></textarea>
+                <textarea id="description" rows="4" v-model="form.description"></textarea>
             </div>
             <div>
                 <button type="button" class="close" @click="$emit('close')">Close</button>
-                <button type="button">Add</button>
+                <button type="button" @click.prevent="$emit('create', form)">Add</button>
             </div>
         </form>
     </div>
@@ -25,6 +30,10 @@
 
 <style scoped>
 .input-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     margin: 8px 0;
     padding: 8px 16px;
     background-color: #eedeee;
@@ -79,5 +88,11 @@ button.close {
     background-color: #fff;
     color: #3a015c;
     border: 1px solid #3a015c;
+}
+.error {
+    display: block;
+    margin: 4px 0;
+    color: #f00;
+    text-align: left;
 }
 </style>
