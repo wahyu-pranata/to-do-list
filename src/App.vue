@@ -1,24 +1,32 @@
 <script setup>
 import { ref, computed, Transition } from 'vue';
+
+// Components
 import Navbar from './components/Navbar.vue';
 import ToDoModal from './components/ToDoModal.vue';
-import { useValidation } from './composables/useValidation.js'
-import { storageAvailable } from './composables/storageAvailable.js'
+import ToDo from './components/ToDo.vue';
 
-let show = ref(false);
+//Composables
+import { useValidation } from './composables/useValidation.js';
+import { storageAvailable } from './composables/storageAvailable.js';
+
+let showModal = ref(false);
 let toDos = ref([]);
 let formError = ref();
 let storageError = ref();
-let modalShowed = computed(() => {
-	return show.value ? 'max-height: 100vh; overflow: hidden;' : ''
+
+const modalShowed = computed(() => {
+	return showModal.value ? 'max-height: 100vh; overflow: hidden;' : ''
 });
 
+// Check for local storage availability
 if(!storageAvailable('localStorage')) {
 	storageError.value = true;
 } else {
 	storageError.value = false;
 }
 
+// Create new to-do
 function create(form) {
 	if(useValidation(form)) {
 		formError.value = useValidation(form);
@@ -27,7 +35,7 @@ function create(form) {
 		toDo.title = form.title;
 		toDo.description = form.description;
 		toDos.value.push(toDo);
-		show.value = false;
+		showModal.value = false;
 	}
 }
 </script>
@@ -37,20 +45,23 @@ function create(form) {
 	<main class="container" :style="modalShowed">
 		<div v-if="!storageError">
 			<div v-if="(toDos.length > 0)">
-				<!--  -->
+				<button @click="showModal = !showModal" class="submit">Add new to-do</button>
+				<div class="to-dos-container">
+					<ToDo v-for="toDo in toDos" :key="toDo" :title="toDo.title" :description="toDo.description"/>
+				</div>
 			</div>
 			<div v-else>
 				<h1>You don't have any to-do list<br>&gt;﹏&lt;</h1>
-				<button @click="show = !show" class="submit">Add new to-do</button>
+				<button @click="showModal = !showModal" class="submit">Add new to-do</button>
 			</div>
 		</div>
 		<div v-else>
 			<h1>We're sorry, but your browser doesn't support local storage<br>&gt;﹏&lt;</h1>
-		</div>
+		</div> 
 	</main>
 	<Transition name="fade">
-		<div class="overlay" v-if="show">
-			<ToDoModal class="form" @close="show = false" @create="create" :error-msg="formError" @clear-err="formError = ''" />
+		<div class="overlay" v-if="showModal">
+			<ToDoModal class="form" @close="(showModal = false)" @create="create" :error-msg="formError" @clear-err="formError = ''" />
 		</div>
 	</Transition>
 </template>
@@ -64,11 +75,15 @@ function create(form) {
 
 .container {
 	min-height: calc(100vh - 50px);
+	width: 100%;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	justify-content: center;
 	position: relative;
+}
+
+.container > div {
+	width: 100%;
 }
 
 .submit {
@@ -89,6 +104,14 @@ function create(form) {
 
 .vh {
 	height: 100vh;
+}
+
+.to-dos-container {
+	width: 100%;
+	padding: 0 32px;
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	gap: 4px;
 }
 
 .fade-enter-from,

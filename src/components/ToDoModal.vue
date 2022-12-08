@@ -70,6 +70,7 @@ input, textarea {
     padding: 4px 8px;
     background-color: #ffffff;
     color: #000;
+    font-size: 0.8rem;
     font-family: "Proza Libre", Helvetica, Arial, sans-serif;
     border: 1px solid #4f0147;
     border-radius: 2px;
