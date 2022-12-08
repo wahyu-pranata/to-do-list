@@ -23,7 +23,11 @@ function create(form) {
 	if(useValidation(form)) {
 		formError.value = useValidation(form);
 	} else {
-		//
+		let toDo = { title: null, description: null };
+		toDo.title = form.title;
+		toDo.description = form.description;
+		toDos.value.push(toDo);
+		show.value = false;
 	}
 }
 </script>
@@ -32,20 +36,23 @@ function create(form) {
 	<Navbar />
 	<main class="container" :style="modalShowed">
 		<div v-if="!storageError">
-			<h1>You don't have any to-do list<br>&gt;﹏&lt;</h1>
-			<button @click="show = !show" class="submit">Add new to-do</button>
-			<Transition name="fade-down">
-				<div v-if="show">
-					<ToDoModal class="form" @close="show = false" @create="create" :error-msg="formError"
-						@clear-err="formError = ''" />
-				</div>
-			</Transition>
+			<div v-if="(toDos.length > 0)">
+				<!--  -->
+			</div>
+			<div v-else>
+				<h1>You don't have any to-do list<br>&gt;﹏&lt;</h1>
+				<button @click="show = !show" class="submit">Add new to-do</button>
+			</div>
 		</div>
 		<div v-else>
 			<h1>We're sorry, but your browser doesn't support local storage<br>&gt;﹏&lt;</h1>
 		</div>
 	</main>
-	<div class="overlay" v-if="show"></div>
+	<Transition name="fade">
+		<div class="overlay" v-if="show">
+			<ToDoModal class="form" @close="show = false" @create="create" :error-msg="formError" @clear-err="formError = ''" />
+		</div>
+	</Transition>
 </template>
 
 <style>
@@ -77,7 +84,6 @@ function create(form) {
 }
 
 .form {
-	position: relative;
 	z-index: 1;
 }
 
@@ -85,18 +91,18 @@ function create(form) {
 	height: 100vh;
 }
 
-.fade-down-enter-from,
-.fade-down-leave-to {
+.fade-enter-from,
+.fade-leave-to {
 	opacity: 0;
 }
 
-.fade-down-enter-to,
-.fade-down-leave-from {
+.fade-enter-to,
+.fade-leave-from {
 	opacity: 1;
 }
 
-.fade-down-enter-active,
-.fade-down-leave-active {
+.fade-enter-active,
+.fade-leave-active {
 	transition: all 0.1s ease-in-out;
 }
 </style>
