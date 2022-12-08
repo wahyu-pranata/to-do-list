@@ -3,19 +3,27 @@ import { ref, computed, Transition } from 'vue';
 import Navbar from './components/Navbar.vue';
 import ToDoModal from './components/ToDoModal.vue';
 import { useValidation } from './composables/useValidation.js'
+import { storageAvailable } from './composables/storageAvailable.js'
 
 let show = ref(false);
 let toDos = ref([]);
-let error = ref()
+let formError = ref();
+let storageError = ref();
 let modalShowed = computed(() => {
 	return show.value ? 'max-height: 100vh; overflow: hidden;' : ''
 });
 
+if(!storageAvailable('localStorage')) {
+	storageError.value = true;
+} else {
+	storageError.value = false;
+}
+
 function create(form) {
 	if(useValidation(form)) {
-		error.value = useValidation(form);
+		formError.value = useValidation(form);
 	} else {
-		
+		//
 	}
 }
 </script>
@@ -23,13 +31,19 @@ function create(form) {
 <template>
 	<Navbar />
 	<main class="container" :style="modalShowed">
-		<h1>You don't have any to-do list<br>&gt;﹏&lt;</h1>
-		<button @click="show = !show" class="submit">Add new to-do</button>
-		<Transition name="fade-down">
-			<div v-if="show">
-				<ToDoModal class="form" @close="show = false" @create="create" :error-msg="error" @clear-err="error = ''"/>
-			</div>
-		</Transition>
+		<div v-if="!storageError">
+			<h1>You don't have any to-do list<br>&gt;﹏&lt;</h1>
+			<button @click="show = !show" class="submit">Add new to-do</button>
+			<Transition name="fade-down">
+				<div v-if="show">
+					<ToDoModal class="form" @close="show = false" @create="create" :error-msg="formError"
+						@clear-err="formError = ''" />
+				</div>
+			</Transition>
+		</div>
+		<div v-else>
+			<h1>We're sorry, but your browser doesn't support local storage<br>&gt;﹏&lt;</h1>
+		</div>
 	</main>
 	<div class="overlay" v-if="show"></div>
 </template>
