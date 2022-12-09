@@ -8,7 +8,7 @@ import ToDo from './components/ToDo.vue';
 
 //Composables
 import { useValidation } from './composables/useValidation.js';
-import { storageAvailable } from './composables/storageAvailable.js';
+import { useStorageAvailable } from './composables/useStorageAvailable.js';
 
 let showModal = ref(false);
 let toDos = ref([]);
@@ -20,7 +20,7 @@ const modalShowed = computed(() => {
 });
 
 // Check for local storage availability
-if(!storageAvailable('localStorage')) {
+if(!useStorageAvailable('localStorage')) {
 	storageError.value = true;
 } else {
 	storageError.value = false;

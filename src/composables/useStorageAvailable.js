@@ -1,4 +1,4 @@
-export function storageAvailable(type) {
+export function useStorageAvailable(type) {
     let storage;
     try {
         storage = window[type];
