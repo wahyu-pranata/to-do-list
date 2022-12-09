@@ -1,24 +1,31 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 defineProps({
     title: String,
-    description: String
+    description: String,
+    menuStatus: Boolean
 })
 
 let menuShowed = ref(false);
+const menu = ref(null);
+onMounted(() => {
+    menu.value.addEventListener('click', () => {
+        menuShowed.value = true;
+    })
+})
 </script>
 
 <template>
-    <div class="to-do-container" @click.capture="(menuShowed = false)">
+    <div class="to-do-container">
         <h2>{{ title }}</h2>
-        <p v-html="description ? description : '<span>no description provided</sp>'"></p>
-        <div class="kebab-menu" @click="(menuShowed = true)">
+        <p v-html="description ? description : '<span>no description provided</span>'"></p>
+        <div class="kebab-menu" ref="menu">
             <span></span>
             <span></span>
             <span></span>
         </div>
         <Transition>
-            <div class="menu" v-if="menuShowed" @click="(menuShowed = false)">
+            <div class="menu" v-if="menuShowed">
                 <ul>
                     <li>Delete</li>
                     <hr/>
