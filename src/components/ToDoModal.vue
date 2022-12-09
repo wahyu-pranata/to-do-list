@@ -1,12 +1,19 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 let form = ref({
     title: "",
     description: ""
-})
+});
+const input = ref(null);
+
 defineProps({
     errorMsg: String
-})
+});
+
+// On modal mounted 
+onMounted(() => {
+    input.value.focus();
+});
 </script>
 
 <template>
@@ -18,7 +25,7 @@ defineProps({
             </header>
             <div>
                 <label for="title">Title <span>*</span></label>
-                <input type="text" id="title" v-model="form.title" @keypress="$emit('clearErr')">
+                <input type="text" id="title" v-model="form.title" @keypress="$emit('clearErr')" ref="input">
             </div>
             <div>
                 <label for="description">Description</label>
