@@ -6,7 +6,7 @@ defineProps({
     description: String
 })
 let menuShowed = ref();
-const clickOusideTheBox =  (events) => {
+const clickOusideTheBox =  () => {
   menuShowed.value = false
 }
 </script>
