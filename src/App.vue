@@ -14,7 +14,6 @@ let showModal = ref(false);
 let toDos = ref([]);
 let formError = ref();
 let storageError = ref();
-let indexs = ref();
 const modalShowed = computed(() => {
 	return showModal.value ? 'max-height: 100vh; overflow: hidden;' : ''
 });
@@ -43,7 +42,7 @@ function create(form) {
 			<div v-if="(toDos.length > 0)">
 				<button @click="showModal = !showModal" class="submit">Add new to-do</button>
 				<div class="to-dos-container" >
-					<ToDo v-for="(toDo, index) in toDos" :key="toDo" :title="toDo.title" :index="index" :description="toDo.description"/>
+					<ToDo v-for="toDo in toDos" :key="toDo" :title="toDo.title" :description="toDo.description"/>
 				</div>
 			</div>
 			<div v-else>
