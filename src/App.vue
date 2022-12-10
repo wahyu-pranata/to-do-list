@@ -14,24 +14,20 @@ let showModal = ref(false);
 let toDos = ref([]);
 let formError = ref();
 let storageError = ref();
-
+let indexs = ref();
 const modalShowed = computed(() => {
 	return showModal.value ? 'max-height: 100vh; overflow: hidden;' : ''
 });
 
 // Check for local storage availability
-if(!useStorageAvailable('localStorage')) {
-	storageError.value = true;
-} else {
-	storageError.value = false;
-}
+storageError.value = !useStorageAvailable('localStorage');
 
 // Create new to-do
 function create(form) {
 	if(useValidation(form)) {
 		formError.value = useValidation(form);
 	} else {
-		let toDo = { title: null, description: null };
+		let toDo = {title: null, description: null };
 		toDo.title = form.title;
 		toDo.description = form.description;
 		toDos.value.push(toDo);
@@ -46,8 +42,8 @@ function create(form) {
 		<div v-if="!storageError">
 			<div v-if="(toDos.length > 0)">
 				<button @click="showModal = !showModal" class="submit">Add new to-do</button>
-				<div class="to-dos-container">
-					<ToDo v-for="toDo in toDos" :key="toDo" :title="toDo.title" :description="toDo.description"/>
+				<div class="to-dos-container" >
+					<ToDo v-for="(toDo, index) in toDos" :key="toDo" :title="toDo.title" :index="index" :description="toDo.description"/>
 				</div>
 			</div>
 			<div v-else>
