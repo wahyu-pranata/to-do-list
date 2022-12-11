@@ -1,36 +1,31 @@
 <script setup>
-import { ref, onMounted } from "vue";
-import { directive as vClickOutside } from "click-outside-vue3";
+import { ref } from 'vue';
+import { directive as vClickOutside } from 'click-outside-vue3'
 defineProps({
     title: String,
     description: String,
     menuStatus: Boolean
 })
-
-let menuShowed = ref(false);
-const menu = ref(null);
-
-onMounted(() => {
-    menu.value.addEventListener('click', () => {
-        menuShowed.value = true;
-    });
-    description.value.style.fontStyle = "italic";
-})
-
-const clickOutsideBox = () => {
-    menuShowed.value = false;
+let menuShowed = ref();
+const clickOusideTheBox =  () => {
+  menuShowed.value = false
 }
 </script>
 
 <template>
-    <div class="to-do-container" v-click-outside="clickOutsideBox">
+    <div class="to-do-container" v-click-outside="clickOusideTheBox" @click.capture="(menuShowed = false)">
         <h2>{{ title }}</h2>
-        <p v-html="description ? description : '<span>no description provided</span>'"></p>
-        <div class="kebab-menu" ref="menu">
+        <p v-html="description ? description : '<span>no description provided</sp>'"></p>
+        <div class="kebab-menu" @click="(menuShowed = false)">
             <span></span>
             <span></span>
             <span></span>
         </div>
+      <div class="kebab-menu" @click="(menuShowed = true)">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
         <Transition>
             <div class="menu" v-if="menuShowed">
                 <ul>

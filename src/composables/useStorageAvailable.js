@@ -2,14 +2,20 @@ export function useStorageAvailable(type) {
     let storage;
     try {
         storage = window[type];
-        const x = '__storage_test__';
-        storage.setItem(x, x);
-        storage.removeItem(x,x);
+        const storageName = '__storage_test__';
+        storage.setItem(storageName, storageName);
+        storage.removeItem(storageName,storageName);
         return true;
     }
-    catch(e) {
-        return e instanceof DOMException && (
-            e.code === 22 || e.code === 1014 || e.name === "QuotaExceededError" ||  e.name === "NS_ERROR_DOM_QUOTA_REACHED"
+    catch(error) {
+        return error
+    }
+        /* i Don't know why you need to call DOMException for error even thou you can't actually just return the error itself
+        if you want to use it just uncomment the following line
+        return error instanceof DOMException && (
+            error.code === 22 || error.code === 1014 || error.name === "QuotaExceededError" ||  error.name === "NS_ERROR_DOM_QUOTA_REACHED"
         ) && (storage && storage.length !== 0);
     }
+
+         */
 }
