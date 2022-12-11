@@ -1,5 +1,6 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted } from "vue";
+import { directive as vClickOutside } from "click-outside-vue3";
 defineProps({
     title: String,
     description: String,
@@ -8,15 +9,21 @@ defineProps({
 
 let menuShowed = ref(false);
 const menu = ref(null);
+
 onMounted(() => {
     menu.value.addEventListener('click', () => {
         menuShowed.value = true;
-    })
+    });
+    description.value.style.fontStyle = "italic";
 })
+
+const clickOutsideBox = () => {
+    menuShowed.value = false;
+}
 </script>
 
 <template>
-    <div class="to-do-container">
+    <div class="to-do-container" v-click-outside="clickOutsideBox">
         <h2>{{ title }}</h2>
         <p v-html="description ? description : '<span>no description provided</span>'"></p>
         <div class="kebab-menu" ref="menu">
