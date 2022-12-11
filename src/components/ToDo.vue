@@ -16,26 +16,21 @@ const clickOusideTheBox =  () => {
     <div class="to-do-container" v-click-outside="clickOusideTheBox" @click.capture="(menuShowed = false)">
         <h2>{{ title }}</h2>
         <p v-html="description ? description : '<span>no description provided</sp>'"></p>
-        <div class="kebab-menu" @click="(menuShowed = false)">
+        <div class="kebab-menu" @click="(menuShowed = true)">
             <span></span>
             <span></span>
             <span></span>
         </div>
-      <div class="kebab-menu" @click="(menuShowed = true)">
-        <span></span>
-        <span></span>
-        <span></span>
-      </div>
-        <Transition>
-            <div class="menu" v-if="menuShowed">
-                <ul>
-                    <li>Delete</li>
-                    <hr/>
-                    <li>Mark as done</li>
-                </ul>
-            </div>
-        </Transition>
-    </div>
+            <Transition>
+                <div class="menu" v-if="menuShowed">
+                    <ul>
+                        <li>Delete</li>
+                        <hr/>
+                        <li>Mark as done</li>
+                    </ul>
+                </div>
+            </Transition>
+        </div>
 </template>
 
 <style scoped>
