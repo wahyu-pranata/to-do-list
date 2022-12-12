@@ -1,13 +1,17 @@
+/**
+ *
+ * @param type Storages Type [localstorage|sessions storage]
+ * @returns {boolean} Return true if the storage is available otherwise return false
+ */
 export function useStorageAvailable(type) {
-    let storage;
+    /* Make it More Clear What's Going On */
     try {
-        storage = window[type];
-        const storageName = '__storage_test__';
-        storage.setItem(storageName, storageName);
-        storage.removeItem(storageName,storageName);
-        return true;
+        const dummyName = '__checkStorageAvailable__' + type; /*  */
+        window[type].setItem(dummyName, dummyName)
+        window[type].removeItem(dummyName)
+        return true
     }
-    catch(error) {
-        return error
+    catch {
+        return false
     }
 }

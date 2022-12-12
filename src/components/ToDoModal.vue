@@ -41,10 +41,8 @@ onMounted(() => {
 
 <style scoped>
 .input-container {
-    position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%);
     margin: 8px 0;
     padding: 8px 16px;
     background-color: #eedeee;

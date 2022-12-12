@@ -1,12 +1,30 @@
 <script setup>
-import { ref } from 'vue';
+import {ref} from 'vue';
 import { directive as vClickOutside } from 'click-outside-vue3'
+import {getDataFromStorage,saveIntoStorage} from '../composables/saveData.js'
 defineProps({
     title: String,
     description: String,
-    menuStatus: Boolean
+    menuStatus: Boolean,
+  index: Number
 })
 let menuShowed = ref();
+
+/* Remove Todos list from Storage */
+const deleteTodo = (index) => {
+  /* Get the Data from LocalStorage */
+  let currentData = JSON.parse(getDataFromStorage(1))
+  /* Delete the data, base from the loop index number */
+  delete currentData[index]
+  /* Because the "delete" keyword will return the "deleted value" into "null"
+  * We need to remove the null value from the array, so we will get only an
+  * Empty array otherwise the app will crash*/
+  let filtered = currentData.filter(function (elements) {
+    return elements !== null
+  })
+  /* Overwrite old data with the new one */
+  saveIntoStorage(filtered, 1)
+}
 const clickOusideTheBox =  () => {
   menuShowed.value = false
 }
@@ -24,7 +42,7 @@ const clickOusideTheBox =  () => {
             <Transition>
                 <div class="menu" v-if="menuShowed">
                     <ul>
-                        <li>Delete</li>
+                        <li @click="deleteTodo(index); $emit('refreshData')">Delete</li>
                         <hr/>
                         <li>Mark as done</li>
                     </ul>
@@ -76,7 +94,7 @@ const clickOusideTheBox =  () => {
     right: -4px;
     border-radius: 4px;
     background-color: #fff;
-    box-shadow: 0px 2px 16px #4f0147aa;
+    box-shadow: 0 2px 16px #4f0147aa;
     user-select: none;
 }
 .menu li {
