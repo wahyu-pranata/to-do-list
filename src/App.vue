@@ -1,43 +1,58 @@
 <script setup>
-import { ref, computed, Transition } from 'vue';
+import { ref, computed, Transition } from "vue";
 
 // Components
-import Navbar from './components/Navbar.vue';
-import ToDoModal from './components/ToDoModal.vue';
-import ToDo from './components/ToDo.vue';
+import Navbar from "./components/Navbar.vue";
+import ToDoModal from "./components/ToDoModal.vue";
+import ToDo from "./components/ToDo.vue";
 
 //Composables
-import { useValidation } from './composables/useValidation.js';
-import { useStorageAvailable } from './composables/useStorageAvailable.js';
+import { useValidation } from "./composables/useValidation.js";
+import { useStorageAvailable } from "./composables/useStorageAvailable.js";
+import { useMakeId } from "./composables/useMakeId.js"
 
 let showModal = ref(false);
-let toDos = ref([]);
+let toDos = ref(getToDos());
 let formError = ref();
 let storageError = ref();
 const modalShowed = computed(() => {
-	return showModal.value ? 'max-height: 100vh; overflow: hidden;' : ''
+	return showModal.value ? "max-height: 100vh; overflow: hidden;" : ""
 });
 
 // Check for local storage availability
-storageError.value = !useStorageAvailable('localStorage');
+storageError.value = !useStorageAvailable("localStorage");
 
 // Create new to-do
 function create(form) {
 	if(useValidation(form)) {
 		formError.value = useValidation(form);
 	} else {
-		let toDo = {title: null, description: null };
-		toDo.title = form.title;
-		toDo.description = form.description;
+		let existingData = getToDos() ?? { data: [] };
+		let toDo = {
+			id: useMakeId(8),
+			title: form.title,
+			description: form.description,
+			is_archived: false
+		}
 		toDos.value.push(toDo);
+		existingData.data = toDos.data;
+
+		localStorage.setItem("toDos", JSON.stringify(existingData));
 		showModal.value = false;
 	}
+}
+
+// Get to dos from local storage
+function getToDos() {
+	let item = JSON.parse(localStorage.getItem("toDos"));
+	return item.data
 }
 </script>
 
 <template>
 	<Navbar />
 	<main class="container" :style="modalShowed">
+		<div v-for="toDo in toDos.data">{{ toDo.title }}</div>
 		<div v-if="!storageError">
 			<div v-if="(toDos.length > 0)">
 				<button @click="showModal = !showModal" class="submit">Add new to-do</button>
