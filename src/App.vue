@@ -11,53 +11,79 @@ import { useValidation } from "./composables/useValidation.js";
 import { useStorageAvailable } from "./composables/useStorageAvailable.js";
 import { useMakeId } from "./composables/useMakeId.js"
 
+// Check for local storage availability
+if (useStorageAvailable("localStorage")) {
+	if (!localStorage.getItem("toDos")) {
+		localStorage.setItem("toDos", '{ "data": [] }');
+	}
+} else {
+	storageError.value = !useStorageAvailable("localStorage");
+}
+
 let showModal = ref(false);
-let toDos = ref(getToDos());
+let toDos = ref(getToDos().data);
 let formError = ref();
 let storageError = ref();
 const modalShowed = computed(() => {
 	return showModal.value ? "max-height: 100vh; overflow: hidden;" : ""
 });
 
-// Check for local storage availability
-storageError.value = !useStorageAvailable("localStorage");
-
 // Create new to-do
 function create(form) {
 	if(useValidation(form)) {
 		formError.value = useValidation(form);
 	} else {
-		let existingData = getToDos() ?? { data: [] };
+		let existingData = getToDos() ?? {"data": []};
 		let toDo = {
 			id: useMakeId(8),
 			title: form.title,
 			description: form.description,
 			is_archived: false
 		}
-		toDos.value.push(toDo);
-		existingData.data = toDos.data;
-
+		existingData.data.push(JSON.stringify(toDo));
 		localStorage.setItem("toDos", JSON.stringify(existingData));
+		toDos.value = getToDos().data;
 		showModal.value = false;
 	}
+}
+
+// Delete selected to-do
+function deleteToDo(id) {
+	let existingData = getToDos();
+	let parsedToDos = existingData.data.map((e) => JSON.parse(e));
+	let stringToDos = [];
+	for(let i = 0; i < parsedToDos.length; i++) {
+		if(parsedToDos[i].id == id) {
+			parsedToDos.splice(i, 1);
+		}
+	}
+	parsedToDos.forEach(e => stringToDos.push(JSON.stringify(e)));
+	existingData.data = stringToDos;
+	localStorage.setItem("toDos", JSON.stringify(existingData));
+	toDos.value = getToDos().data;
 }
 
 // Get to dos from local storage
 function getToDos() {
 	let item = JSON.parse(localStorage.getItem("toDos"));
-	return item.data
+	return item
 }
 </script>
 
 <template>
 	<Navbar />
 	<main class="container" :style="modalShowed">
-		<div v-for="toDo in toDos.data">{{ toDo.title }}</div>
 		<div v-if="!storageError">
 			<div v-if="(toDos.length > 0)">
 				<button @click="showModal = !showModal" class="submit">Add new to-do</button>
 				<div class="to-dos-container" >
-					<ToDo v-for="toDo in toDos" :key="toDo" :title="toDo.title" :description="toDo.description"/>
+					<ToDo v-for="toDo in toDos" 
+						:key="JSON.parse(toDo).id"
+						:title="JSON.parse(toDo).title"
+						:description="JSON.parse(toDo).description"
+						:to-do-id="JSON.parse(toDo).id"
+						@delete="deleteToDo"
+					/>
 				</div>
 			</div>
 			<div v-else>

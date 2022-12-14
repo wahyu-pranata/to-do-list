@@ -4,7 +4,8 @@ import { directive as vClickOutside } from 'click-outside-vue3'
 defineProps({
     title: String,
     description: String,
-    menuStatus: Boolean
+    menuStatus: Boolean,
+    toDoId: String
 })
 let menuShowed = ref();
 const clickOusideTheBox =  () => {
@@ -24,7 +25,7 @@ const clickOusideTheBox =  () => {
             <Transition>
                 <div class="menu" v-if="menuShowed">
                     <ul>
-                        <li>Delete</li>
+                        <li @click="$emit('delete', toDoId)">Delete</li>
                         <hr/>
                         <li>Mark as done</li>
                     </ul>
