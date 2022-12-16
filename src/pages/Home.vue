@@ -21,10 +21,9 @@ if (useStorageAvailable("localStorage")) {
     storageError.value = !useStorageAvailable("localStorage");
 }
 
-const { reveal, onConfirm, onCancel } = createConfirmDialog(ModalDialog)
+const { reveal, onConfirm } = createConfirmDialog(ModalDialog)
 
 let showFormModal = ref(false);
-let isConfirmationShowed = ref();
 let toDos = ref(getToDos().data);
 let formError = ref();
 let storageError = ref();
@@ -70,15 +69,33 @@ function deleteToDo(id) {
         localStorage.setItem("toDos", JSON.stringify(existingData));
         toDos.value = getToDos().data;
     })
-    onCancel(() => {
-        console.log('Canceled!')
-    })
+}
+
+function markAsDone(id) {
+    let existingData = getToDos();
+    let parsedToDos = existingData.data.map((e) => JSON.parse(e));
+    let stringToDos = [];
+    for (let i = 0; i < parsedToDos.length; i++) {
+        if (parsedToDos[i].id == id) {
+            parsedToDos[i].is_archived = true;
+        }
+    }
+    parsedToDos.forEach(e => stringToDos.push(JSON.stringify(e)));
+    existingData.data = stringToDos;
+    localStorage.setItem("toDos", JSON.stringify(existingData));
+    toDos.value = getToDos().data;
 }
 
 // Get to dos from local storage
 function getToDos() {
     let item = JSON.parse(localStorage.getItem("toDos"));
-    return item
+    let toDos = {data: []};
+    for(let i = 0; i < item.data.length; i++) {
+        if (!JSON.parse(item.data[i]).is_archived) {
+            toDos.data.push(item.data[i]);
+        }
+    }
+    return toDos;
 }
 </script>
 
@@ -88,8 +105,15 @@ function getToDos() {
             <div v-if="(toDos.length > 0)">
                 <button @click="showFormModal = !showFormModal" class="submit">Add new to-do</button>
                 <div class="to-dos-container">
-                    <ToDo v-for="toDo in toDos" :key="JSON.parse(toDo).id" :title="JSON.parse(toDo).title"
-                        :description="JSON.parse(toDo).description" :to-do-id="JSON.parse(toDo).id" @delete="deleteToDo(JSON.parse(toDo).id)" />
+                    <ToDo 
+                        v-for="toDo in toDos"
+                        :key="JSON.parse(toDo).id"
+                        :title="JSON.parse(toDo).title"
+                        :description="JSON.parse(toDo).description"
+                        :to-do-id="JSON.parse(toDo).id"
+                        @delete="deleteToDo(JSON.parse(toDo).id)"
+                        @mark-as-done="markAsDone(JSON.parse(toDo).id)"
+                    />
                 </div>
             </div>
             <div v-else class="empty-container">

@@ -27,7 +27,7 @@ const clickOusideTheBox =  () => {
                     <ul>
                         <li @click="$emit('delete', toDoId)">Delete</li>
                         <hr/>
-                        <li>Mark as done</li>
+                        <li @click="$emit('markAsDone', toDoId)">Mark as done</li>
                     </ul>
                 </div>
             </Transition>
