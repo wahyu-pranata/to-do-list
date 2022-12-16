@@ -100,9 +100,15 @@ function markAsDone(id) {
                         :title="JSON.parse(toDo).title"
                         :description="JSON.parse(toDo).description"
                         :to-do-id="JSON.parse(toDo).id"
-                        @delete="deleteToDo(JSON.parse(toDo).id)"
-                        @mark-as-done="markAsDone(JSON.parse(toDo).id)"
-                    />
+                    >
+                        <template #list>
+                            <ul>
+                                <li @click="deleteToDo(JSON.parse(toDo).id)">Delete</li>
+                                <hr />
+                                <li @click="markAsDone(JSON.parse(toDo).id)">Mark as done</li>
+                            </ul>
+                        </template>
+                    </ToDo>
                 </div>
             </div>
             <div v-else class="empty-container">
@@ -172,6 +178,12 @@ function markAsDone(id) {
 
 .empty-container {
     margin-top: 25vh;
+}
+.menu li {
+    list-style-type: none;
+    margin: 6px 0;
+    color: #222;
+    cursor: pointer;
 }
 
 .fade-enter-from,

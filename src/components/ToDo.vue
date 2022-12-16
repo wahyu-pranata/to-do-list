@@ -24,11 +24,7 @@ const clickOusideTheBox =  () => {
         </div>
             <Transition>
                 <div class="menu" v-if="menuShowed">
-                    <ul>
-                        <li @click="$emit('delete', toDoId)">Delete</li>
-                        <hr/>
-                        <li @click="$emit('markAsDone', toDoId)">Mark as done</li>
-                    </ul>
+                    <slot name="list"></slot>
                 </div>
             </Transition>
         </div>
