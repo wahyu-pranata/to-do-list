@@ -8,6 +8,7 @@ import ToDo from "../components/ToDo.vue";
 import ModalDialog from '../components/ModalDialog.vue'
 
 //Composables
+import { useGetToDos } from "../composables/useGetToDos.js";
 import { useValidation } from "../composables/useValidation.js";
 import { useStorageAvailable } from "../composables/useStorageAvailable.js";
 import { useMakeId } from "../composables/useMakeId.js"
@@ -24,7 +25,7 @@ if (useStorageAvailable("localStorage")) {
 const { reveal, onConfirm } = createConfirmDialog(ModalDialog)
 
 let showFormModal = ref(false);
-let toDos = ref(getToDos().data);
+let toDos = ref(useGetToDos().data);
 let formError = ref();
 let storageError = ref();
 const modalShowed = computed(() => {
@@ -36,7 +37,7 @@ function create(form) {
     if (useValidation(form)) {
         formError.value = useValidation(form);
     } else {
-        let existingData = getToDos() ?? { "data": [] };
+        let existingData = useGetToDos() ?? { "data": [] };
         let toDo = {
             id: useMakeId(8),
             title: form.title,
@@ -45,7 +46,7 @@ function create(form) {
         }
         existingData.data.push(JSON.stringify(toDo));
         localStorage.setItem("toDos", JSON.stringify(existingData));
-        toDos.value = getToDos().data;
+        toDos.value = useGetToDos().data;
         showFormModal.value = false;
     }
 }
@@ -56,7 +57,7 @@ function deleteToDo(id) {
     reveal()
 
     onConfirm(() => {
-        let existingData = getToDos();
+        let existingData = useGetToDos();
         let parsedToDos = existingData.data.map((e) => JSON.parse(e));
         let stringToDos = [];
         for (let i = 0; i < parsedToDos.length; i++) {
@@ -67,12 +68,12 @@ function deleteToDo(id) {
         parsedToDos.forEach(e => stringToDos.push(JSON.stringify(e)));
         existingData.data = stringToDos;
         localStorage.setItem("toDos", JSON.stringify(existingData));
-        toDos.value = getToDos().data;
+        toDos.value = useGetToDos().data;
     })
 }
 
 function markAsDone(id) {
-    let existingData = getToDos();
+    let existingData = useGetToDos();
     let parsedToDos = existingData.data.map((e) => JSON.parse(e));
     let stringToDos = [];
     for (let i = 0; i < parsedToDos.length; i++) {
@@ -83,19 +84,7 @@ function markAsDone(id) {
     parsedToDos.forEach(e => stringToDos.push(JSON.stringify(e)));
     existingData.data = stringToDos;
     localStorage.setItem("toDos", JSON.stringify(existingData));
-    toDos.value = getToDos().data;
-}
-
-// Get to dos from local storage
-function getToDos() {
-    let item = JSON.parse(localStorage.getItem("toDos"));
-    let toDos = {data: []};
-    for(let i = 0; i < item.data.length; i++) {
-        if (!JSON.parse(item.data[i]).is_archived) {
-            toDos.data.push(item.data[i]);
-        }
-    }
-    return toDos;
+    toDos.value = useGetToDos().data;
 }
 </script>
 
