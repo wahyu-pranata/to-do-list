@@ -1,9 +1,11 @@
 <script setup>
 import { ref, computed, Transition } from "vue";
+import { createConfirmDialog } from 'vuejs-confirm-dialog'
 
 // Components
 import ToDoModal from "../components/ToDoModal.vue";
 import ToDo from "../components/ToDo.vue";
+import ModalDialog from '../components/ModalDialog.vue'
 
 //Composables
 import { useValidation } from "../composables/useValidation.js";
@@ -19,12 +21,15 @@ if (useStorageAvailable("localStorage")) {
     storageError.value = !useStorageAvailable("localStorage");
 }
 
-let showModal = ref(false);
+const { reveal, onConfirm, onCancel } = createConfirmDialog(ModalDialog)
+
+let showFormModal = ref(false);
+let isConfirmationShowed = ref();
 let toDos = ref(getToDos().data);
 let formError = ref();
 let storageError = ref();
 const modalShowed = computed(() => {
-    return showModal.value ? "max-height: 100vh; overflow: hidden;" : ""
+    return showFormModal.value ? "max-height: 100vh; overflow: hidden;" : ""
 });
 
 // Create new to-do
@@ -42,24 +47,32 @@ function create(form) {
         existingData.data.push(JSON.stringify(toDo));
         localStorage.setItem("toDos", JSON.stringify(existingData));
         toDos.value = getToDos().data;
-        showModal.value = false;
+        showFormModal.value = false;
     }
 }
 
 // Delete selected to-do
 function deleteToDo(id) {
-    let existingData = getToDos();
-    let parsedToDos = existingData.data.map((e) => JSON.parse(e));
-    let stringToDos = [];
-    for (let i = 0; i < parsedToDos.length; i++) {
-        if (parsedToDos[i].id == id) {
-            parsedToDos.splice(i, 1);
+
+    reveal()
+
+    onConfirm(() => {
+        let existingData = getToDos();
+        let parsedToDos = existingData.data.map((e) => JSON.parse(e));
+        let stringToDos = [];
+        for (let i = 0; i < parsedToDos.length; i++) {
+            if (parsedToDos[i].id == id) {
+                parsedToDos.splice(i, 1);
+            }
         }
-    }
-    parsedToDos.forEach(e => stringToDos.push(JSON.stringify(e)));
-    existingData.data = stringToDos;
-    localStorage.setItem("toDos", JSON.stringify(existingData));
-    toDos.value = getToDos().data;
+        parsedToDos.forEach(e => stringToDos.push(JSON.stringify(e)));
+        existingData.data = stringToDos;
+        localStorage.setItem("toDos", JSON.stringify(existingData));
+        toDos.value = getToDos().data;
+    })
+    onCancel(() => {
+        console.log('Canceled!')
+    })
 }
 
 // Get to dos from local storage
@@ -73,15 +86,15 @@ function getToDos() {
     <main class="container" :style="modalShowed">
         <div v-if="!storageError">
             <div v-if="(toDos.length > 0)">
-                <button @click="showModal = !showModal" class="submit">Add new to-do</button>
+                <button @click="showFormModal = !showFormModal" class="submit">Add new to-do</button>
                 <div class="to-dos-container">
                     <ToDo v-for="toDo in toDos" :key="JSON.parse(toDo).id" :title="JSON.parse(toDo).title"
-                        :description="JSON.parse(toDo).description" :to-do-id="JSON.parse(toDo).id" @delete="deleteToDo" />
+                        :description="JSON.parse(toDo).description" :to-do-id="JSON.parse(toDo).id" @delete="deleteToDo(JSON.parse(toDo).id)" />
                 </div>
             </div>
             <div v-else class="empty-container">
                 <h1>You don't have any to-do list<br>&gt;﹏&lt;</h1>
-                <button @click="showModal = !showModal" class="submit">Add new to-do</button>
+                <button @click="showFormModal = !showFormModal" class="submit">Add new to-do</button>
             </div>
         </div>
         <div v-else class="empty-container">
@@ -89,8 +102,8 @@ function getToDos() {
         </div>
     </main>
     <Transition name="fade">
-        <div class="overlay" v-if="showModal">
-            <ToDoModal class="form" @close="(showModal = false)" @create="create" :error-msg="formError"
+        <div class="overlay" v-if="showFormModal">
+            <ToDoModal class="form" @close="(showFormModal = false)" @create="create" :error-msg="formError"
                 @clear-err="formError = ''" />
         </div>
     </Transition>
