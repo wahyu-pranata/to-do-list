@@ -1,5 +1,7 @@
 <script setup>
-import { ref, computed, Transition } from "vue";
+import Layout from "./layout/Layout.vue";
+
+import { ref, Transition } from "vue";
 import { createConfirmDialog } from 'vuejs-confirm-dialog'
 
 // Components
@@ -10,27 +12,13 @@ import ModalDialog from '../components/ModalDialog.vue'
 //Composables
 import { useGetToDos } from "../composables/useGetToDos.js";
 import { useValidation } from "../composables/useValidation.js";
-import { useStorageAvailable } from "../composables/useStorageAvailable.js";
 import { useMakeId } from "../composables/useMakeId.js"
-
-// Check for local storage availability
-if (useStorageAvailable("localStorage")) {
-    if (!localStorage.getItem("toDos")) {
-        localStorage.setItem("toDos", '{ "data": [] }');
-    }
-} else {
-    storageError.value = !useStorageAvailable("localStorage");
-}
 
 const { reveal, onConfirm } = createConfirmDialog(ModalDialog)
 
 let showFormModal = ref(false);
 let toDos = ref(useGetToDos().data);
 let formError = ref();
-let storageError = ref();
-const modalShowed = computed(() => {
-    return showFormModal.value ? "max-height: 100vh; overflow: hidden;" : ""
-});
 
 // Create new to-do
 function create(form) {
@@ -53,9 +41,7 @@ function create(form) {
 
 // Delete selected to-do
 function deleteToDo(id) {
-
     reveal()
-
     onConfirm(() => {
         let existingData = useGetToDos();
         let parsedToDos = existingData.data.map((e) => JSON.parse(e));
@@ -89,68 +75,47 @@ function markAsDone(id) {
 </script>
 
 <template>
-    <main class="container" :style="modalShowed">
-        <div v-if="!storageError">
-            <div v-if="(toDos.length > 0)">
-                <button @click="showFormModal = !showFormModal" class="submit">Add new to-do</button>
-                <div class="to-dos-container">
-                    <ToDo 
-                        v-for="toDo in toDos"
-                        :key="JSON.parse(toDo).id"
-                        :title="JSON.parse(toDo).title"
-                        :description="JSON.parse(toDo).description"
-                        :to-do-id="JSON.parse(toDo).id"
-                    >
-                        <template #list>
-                            <ul>
-                                <li @click="deleteToDo(JSON.parse(toDo).id)">Delete</li>
-                                <hr />
-                                <li @click="markAsDone(JSON.parse(toDo).id)">Mark as done</li>
-                            </ul>
-                        </template>
-                    </ToDo>
-                </div>
-            </div>
-            <div v-else class="empty-container">
-                <h1>You don't have any to-do list<br>&gt;﹏&lt;</h1>
-                <button @click="showFormModal = !showFormModal" class="submit">Add new to-do</button>
+    <Layout>
+        <div v-if="(toDos.length > 0)">
+            <button @click="showFormModal = !showFormModal" class="toggle-form">Add new to-do</button>
+            <div class="to-dos-container">
+                <ToDo v-for="toDo in toDos" :key="JSON.parse(toDo).id" :title="JSON.parse(toDo).title"
+                    :description="JSON.parse(toDo).description" :to-do-id="JSON.parse(toDo).id">
+                    <template #list>
+                        <ul>
+                            <li @click="deleteToDo(JSON.parse(toDo).id)">Delete</li>
+                            <hr />
+                            <li @click="markAsDone(JSON.parse(toDo).id)">Mark as done</li>
+                        </ul>
+                    </template>
+                </ToDo>
             </div>
         </div>
         <div v-else class="empty-container">
-            <h1>We're sorry, but your browser doesn't support local storage<br>&gt;﹏&lt;</h1>
+            <h1>You don't have any to-do list<br>&gt;﹏&lt;</h1>
+            <button @click="showFormModal = !showFormModal" class="toggle-form">Add new to-do</button>
         </div>
-    </main>
-    <Transition name="fade">
-        <div class="overlay" v-if="showFormModal">
-            <ToDoModal class="form" @close="(showFormModal = false)" @create="create" :error-msg="formError"
-                @clear-err="formError = ''" />
-        </div>
-    </Transition>
+        <Transition name="fade">
+            <div class="overlay" v-if="showFormModal">
+                <ToDoModal class="form" @close="(showFormModal = false)" @create="create" :error-msg="formError"
+                    @clear-err="formError = ''" />
+            </div>
+        </Transition>
+    </Layout>
 </template>
 
 <style scoped>
 .overlay {
+    overflow: hidden;
     position: absolute;
-    height: 100vh;
+    min-height: 100vh;
     inset: 0;
     background-color: #00000077;
 }
 
-.container {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    position: relative;
-}
-
-.container > div {
-    width: 100%;
-}
-
-.submit {
-    margin: 16px 0;
+.toggle-form {
     padding: 8px 24px;
+    margin: 16px;
     font-family: "Proza Libre", Helvetica, Arial, sans-serif;
     background-color: #fff;
     color: #3a015c;

@@ -10,6 +10,7 @@
 
 <style scoped>
 nav {
+    width: 100%;
     background-color: #ffffff33;
 }
 h1 {
